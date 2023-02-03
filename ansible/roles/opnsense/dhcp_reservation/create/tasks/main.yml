@@ -1,0 +1,28 @@
+- name: Check for existing reservation
+  community.general.xml:
+    path: /conf/config.xml
+    xpath: "/opnsense/dhcpd/{{ item.interface }}/staticmap[mac=\"{{ item.mac }}\"]"
+    count: true
+  register: hits
+  loop: "{{ dhcp_reservations }}"
+  loop_control:
+    label: "{{ item.mac }}"
+
+- name: Add reservation to config
+  community.general.xml:
+    path: /conf/config.xml
+    xpath: "/opnsense/dhcpd/{{ item.item.interface }}"
+    pretty_print: true
+    add_children:
+      - staticmap:
+          _:
+            - mac: "{{ item.item.mac }}"
+            - hostname: "{{ item.item.hostname }}"
+    backup: false
+  register: value
+  when: item.count < 1
+  loop: "{{ hits.results }}"
+  loop_control:
+    label: "{{ item.item.mac }}"
+  notify:
+   - Restart dhcpd service

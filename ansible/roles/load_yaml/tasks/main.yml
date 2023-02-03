@@ -1,0 +1,5 @@
+- name: Load yaml into ansible_facts
+  ansible.builtin.include_vars:
+    file: "{{ yaml_file }}"
+    name: "{{ fact_name }}"
+  register: load_yaml

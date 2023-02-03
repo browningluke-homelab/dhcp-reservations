@@ -1,0 +1,2 @@
+- name: Restart dhcpd service
+  ansible.builtin.command: pluginctl -s dhcpd restart

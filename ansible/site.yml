@@ -1,0 +1,20 @@
+---
+- name: Create DHCP reservations
+  hosts: pluto.sol.browningluke.dev
+  roles:
+    - role: load_yaml
+      vars:
+        yaml_file: ../data_sources/reservations.yml
+        fact_name: resv_file
+
+    - role: opnsense/dhcp_reservation/create
+      vars:
+        dhcp_reservations: >-
+          {{ load_yaml.ansible_facts.resv_file.reservations }}
+
+    - role: opnsense/dhcp_reservation/remove_untracked
+      vars:
+        dhcp_reservations: >-
+          {{ load_yaml.ansible_facts.resv_file.reservations }}
+        managed_interfaces: >-
+          {{ load_yaml.ansible_facts.resv_file.managed_interfaces }}

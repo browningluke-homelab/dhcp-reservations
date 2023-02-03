@@ -1,0 +1,7 @@
+managed_interfaces:
+ - opt5
+
+reservations:
+  - mac: 52:d3:64:7d:c6:02
+    hostname: ds0
+    interface: opt5

@@ -18,6 +18,7 @@
           _:
             - mac: "{{ item.item.mac }}"
             - hostname: "{{ item.item.hostname }}"
+            - ipaddr: "{{ item.item.ip }}"
     backup: false
   register: value
   when: item.count < 1

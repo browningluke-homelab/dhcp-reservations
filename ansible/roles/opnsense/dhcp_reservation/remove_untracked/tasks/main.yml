@@ -6,30 +6,37 @@
   loop: "{{ managed_interfaces }}"
   register: reservation_hits
 
+- name: Format reservations by interface
+  ansible.builtin.set_fact:
+    cacheable: true
+    reservations: >-
+      {{
+        (reservations | default([]))
+        + (item.matches | map('combine', { 'interface': item.item }))
+      }}
+  with_items: "{{ reservation_hits.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+
 - name: Format allocated reservations
   ansible.builtin.set_fact:
+    cacheable: true
     formatted_resv: >-
       {{
-        ansible_facts.dhcp_resv|default([])
+        (formatted_resv | default([]))
         + [{ 'interface': item.interface, 'mac': item.mac }]
       }}
   with_items: "{{ dhcp_reservations }}"
   loop_control:
     label: "{{ item.mac }}"
-  register: formatted_resv
 
 - name: Find unmanaged reservations
   ansible.builtin.set_fact:
+    cacheable: true
     unmanaged_resv: >-
-      {{ item.matches
-        | map('combine', { 'interface': item.item })
-        | list
-        | difference(formatted_resv.results[0].ansible_facts.formatted_resv)
+      {{ ansible_facts.reservations 
+        | difference(ansible_facts.formatted_resv)
       }}
-  loop: "{{ reservation_hits.results }}"
-  loop_control:
-    label: "{{ item.item }}"
-  register: unmanaged_resv
 
 - name: Remove untracked reservation from config
   community.general.xml:
@@ -39,8 +46,8 @@
     state: absent
     backup: false
   register: remove_config
-  loop: "{{ unmanaged_resv.results[0].ansible_facts.unmanaged_resv }}"
+  loop: "{{ ansible_facts.unmanaged_resv }}"
   loop_control:
     label: "{{ item.mac }} on {{ item.interface }}"
   notify:
-   - Restart dhcpd service
+    - Restart dhcpd service

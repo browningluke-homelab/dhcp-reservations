@@ -4,7 +4,9 @@ managed_interfaces:
 reservations:
   - mac: 52:d3:64:7d:c6:02
     hostname: ds0
+    ip: "10.50.0.3"
     interface: opt5
   - mac: 22:4B:3E:BA:EB:53
     hostname: manager0.ds
+    ip: "10.50.0.10"
     interface: opt5

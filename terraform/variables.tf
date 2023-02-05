@@ -1,3 +1,3 @@
 variable "hostname" {
-    type = string
+  type = string
 }

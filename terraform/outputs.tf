@@ -1,3 +1,3 @@
 output "mac" {
-    value = local.mac_addresses[var.hostname]
+  value = local.mac_addresses[var.hostname]
 }

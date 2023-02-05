@@ -34,7 +34,7 @@
   ansible.builtin.set_fact:
     cacheable: true
     unmanaged_resv: >-
-      {{ ansible_facts.reservations 
+      {{ ansible_facts.reservations
         | difference(ansible_facts.formatted_resv)
       }}
 
